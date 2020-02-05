@@ -42,16 +42,10 @@
         </div>
         <div class="col-1">
           <q-btn-group>
+            <q-btn size="md" color="red-14" @click="removePhone(index)" icon="remove" round />
             <q-btn
               size="md"
-              color="red-14"
-              @click="removePhone(index)"
-              icon="remove"
-              round
-            />
-            <q-btn
-              size="md"
-              color="primary"
+              color="secondary"
               v-if="index + 1 === phones.length"
               @click="addPhone"
               icon="add"

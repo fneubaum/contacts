@@ -56,8 +56,7 @@
           :key="contact.id"
           clickable
           v-ripple
-          :to="'/contact/' + contact.id.toString()"
-          exact
+          @click="openContactDetail(contact)"
         >
           <q-item-section avatar>
             <q-icon name="person" />
@@ -98,6 +97,12 @@ export default {
     },
     contacts() {
       return this.$store.getters.contacts;
+    }
+  },
+  methods: {
+    openContactDetail(contact) {
+      this.$store.dispatch("makeActiveContact", contact);
+      this.$router.push({ path: "/contact/" + contact.id });
     }
   },
   data() {

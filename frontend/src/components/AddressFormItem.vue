@@ -40,7 +40,7 @@
           <q-btn size="md" color="red-14" @click="removeAddress(index)" icon="remove" round />
           <q-btn
             size="md"
-            color="primary"
+            color="secondary"
             v-if="index + 1 === addresses.length"
             @click="addAddress "
             icon="add"

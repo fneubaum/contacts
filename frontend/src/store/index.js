@@ -22,9 +22,9 @@ export default new Vuex.Store({
           id: 2,
           first_name: "Jose",
           last_name: "Lopez",
-          emails: [{ kind: "Home", address: "jose@lopez.com" }],
-          phones: [{ kind: "Home", number: "jose@lopez.com" }],
-          addresses: [{ kind: "Home", number: "Main street 123" }]
+          emails: [{ type: "Home", address: "jose@lopez.com" }],
+          phones: [{ type: "Home", number: "jose@lopez.com" }],
+          addresses: [{ type: "Home", number: "Main street 123" }]
         }
       ]
     },
@@ -55,13 +55,28 @@ export default new Vuex.Store({
       state.contacts = contacts;
     },
     setActiveContact(state, contact) {
-      state.activeContact = contact;
+      state.activeContact = {
+        first_name: contact.first_name,
+        last_name: contact.last_name,
+        id: contact.id,
+        emails: [...contact.emails],
+        phones: [...contact.phones],
+        addresses: [...contact.addresses]
+      };
     },
     insertIntoContacts(state, contact) {
-      state.contacts.list.push(contact);
+      let newContact = {
+        first_name: contact.first_name,
+        last_name: contact.last_name,
+        id: contact.id,
+        emails: [...contact.emails],
+        phones: [...contact.phones],
+        addresses: [...contact.addresses]
+      };
+      state.contacts.list.push(newContact);
     },
     deleteFromContacts(state, contact) {
-      state.contacts.list.filter(function(c) {
+      state.contacts.list = state.contacts.list.filter(function(c) {
         return c.id != contact.id;
       });
     },
@@ -78,18 +93,20 @@ export default new Vuex.Store({
       });
     },
     emptyActiveContact(context) {
-      context.commit("setContact", {
+      context.commit("setActiveContact", {
         id: null,
         first_name: "",
         last_name: "",
-        emails: [],
-        phones: [],
-        addresses: []
+        emails: [{ type: "", address: "" }],
+        phones: [{ type: "", country: "", number: "" }],
+        addresses: [{ kind: "", number: "" }]
       });
+    },
+    makeActiveContact(context, contact) {
+      context.commit("setActiveContact", contact);
     },
     createContact(context, contact) {
       context.commit("insertIntoContacts", contact);
-      context.commit("setActiveContact", contact);
     },
     removeContact(context, contact) {
       context.commit("deleteFromContacts", contact);
@@ -97,7 +114,6 @@ export default new Vuex.Store({
     updateContact(context, contact) {
       context.commit("deleteFromContacts", contact);
       context.commit("insertIntoContacts", contact);
-      context.commit("setActiveContact", contact);
     }
   },
   modules: {}
