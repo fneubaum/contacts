@@ -6,13 +6,17 @@ import "@quasar/extras/material-icons/material-icons.css";
 import { Quasar } from "quasar";
 
 Vue.use(Quasar, {
-  config: {},
+  plugins: ["Notify"],
+  config: {
+    notify: {
+      /* Notify defaults */
+    }
+  },
   components: {
     /* not needed if importStrategy is not 'manual' */
   },
   directives: {
     /* not needed if importStrategy is not 'manual' */
   },
-  plugins: {},
   animations: ["fadeIn", "fadeOut"]
 });
