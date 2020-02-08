@@ -1,3 +1,5 @@
+import json
+import copy
 from contextlib import contextmanager
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -25,3 +27,18 @@ def session_scope():
         raise
     finally:
         session.close()
+
+
+class JSONMiddleware(object):
+    def process_request(self, req, resp):
+        copy_stream = bytes([p for p in req.stream.read()])
+        # print(copy_stream)
+        req.json = json.load(req.stream)
+        print(req.json)
+        # req.stream = copy_stream
+
+    def process_resource(self, req, resp, resource, params):
+        pass
+
+    def process_response(self, req, resp, resource, req_succeeded):
+        pass

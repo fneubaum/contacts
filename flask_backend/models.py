@@ -1,22 +1,36 @@
-from sqlalchemy import create_engine, Column, Integer, Unicode, ForeignKey, MetaData, JSON, Table
+from sqlalchemy import create_engine, Column, Integer, Unicode, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-
-BaseModel = declarative_base()
-
-meta = MetaData()
+from flask_sqlalchemy import SQLAlchemy
 
 
-class ContactListModel(BaseModel):
-    __tablename__ = 'contactlists'
-    id = Column(Integer, primary_key=True)
-    name = Column(Unicode(length=100))
-
-    def __repr__(self):
-        return f'<Contactlist {self.name}> and {self.id}'
+db = SQLAlchemy()
 
 
-class ContactModel(BaseModel):
+def contact_from_dict(con, model, is_creation=False):
+    model.first_name = con['first_name']
+    model.last_name = con['last_name']
+    if is_creation:
+        db.session.add(model)
+        db.session.commit()
+    model.emails = []
+    for e in con['emails']:
+        email = EmailModel(type=e['type'], address=e['address'])
+        model.emails.append(email)
+    model.phones = []
+    for p in con['phones']:
+        phone = PhoneModel(
+            type=p['type'], country=p['country'], number=p['number'])
+        model.phones.append(phone)
+    model.addresses = []
+    for a in con['addresses']:
+        address = AddressModel(type=a['type'], value=a['value'])
+        model.addresses.append(address)
+    db.session.commit()
+    return model
+
+
+class ContactModel(db.Model):
     __tablename__ = 'contacts'
     id = Column(Integer, primary_key=True)
     first_name = Column(Unicode(length=100))
@@ -43,10 +57,10 @@ class ContactModel(BaseModel):
         }
 
 
-class EmailModel(BaseModel):
+class EmailModel(db.Model):
     __tablename__ = 'emails'
     id = Column(Integer, primary_key=True)
-    kind = Column(Unicode(length=50))
+    type = Column(Unicode(length=50))
     address = Column(Unicode(length=100))
     contact_id = Column(Integer, ForeignKey('contacts.id'), index=True)
 
@@ -54,21 +68,22 @@ class EmailModel(BaseModel):
         "ContactModel", back_populates="emails", cascade="all", single_parent=True)
 
     def __repr__(self):
-        return f'{self.kind} email of {self.contact}'
+        return f'{self.type} email of {self.contact}'
 
     @property
     def serializable(self):
         return {
             'id': self.id,
-            'kind': self.kind,
+            'type': self.kind,
             'address': self.address
         }
 
 
-class PhoneModel(BaseModel):
+class PhoneModel(db.Model):
     __tablename__ = 'phones'
     id = Column(Integer, primary_key=True)
-    kind = Column(Unicode(length=50))
+    type = Column(Unicode(length=50))
+    country = Column(Unicode(length=20))
     number = Column(Unicode(length=20))
     contact_id = Column(Integer, ForeignKey('contacts.id'), index=True)
 
@@ -76,21 +91,22 @@ class PhoneModel(BaseModel):
         "ContactModel", back_populates="phones", cascade="all", single_parent=True)
 
     def __repr__(self):
-        return f'{self.kind} phone of {self.contact}'
+        return f'{self.type} phone of {self.contact}'
 
     @property
     def serializable(self):
         return {
             'id': self.id,
-            'kind': self.kind,
+            'type': self.type,
+            'country': self.country,
             'number': self.number
         }
 
 
-class AddressModel(BaseModel):
+class AddressModel(db.Model):
     __tablename__ = 'addresses'
     id = Column(Integer, primary_key=True)
-    kind = Column(Unicode(length=50))
+    type = Column(Unicode(length=50))
     value = Column(Unicode(length=100))
     contact_id = Column(Integer, ForeignKey('contacts.id'),
                         index=True)
@@ -99,12 +115,12 @@ class AddressModel(BaseModel):
         "ContactModel", back_populates="addresses", cascade="all")
 
     def __repr__(self):
-        return f'{self.kind} address of {self.contact}'
+        return f'{self.type} address of {self.contact}'
 
     @property
     def serializable(self):
         return {
             'id': self.id,
-            'kind': self.kind,
+            'kind': self.type,
             'value': self.value
         }

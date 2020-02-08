@@ -1,23 +1,23 @@
 from marshmallow import Schema, fields, validate, post_load
-from .models import ContactModel, EmailModel, AddressModel
+from models import ContactModel, EmailModel, AddressModel
 
 
 class EmailSchema(Schema):
-    kind = fields.String(validate=validate.OneOf(
-        ['Work', 'Home', 'School', 'Other']), required=True)
-    address = fields.Email(required=True)
+    type = fields.String(validate=validate.OneOf(
+        ['', 'Work', 'Home', 'School', 'Other']), required=True)
+    address = fields.Email(required=True, validate=validate.Length(min=1))
 
 
 class PhoneSchema(Schema):
-    fields.Str
-    kind = fields.String(validate=validate.OneOf(
-        ['Mobile', 'Work', 'Home', 'School', 'Other']), required=True)
-    number = fields.String(required=True)
+    type = fields.String(validate=validate.OneOf(
+        ['', 'Mobile', 'Work', 'Home', 'School', 'Other']), required=True)
+    country = fields.String(required=True)
+    number = fields.String(required=True, validate=validate.Length(min=1))
 
 
 class AddressSchema(Schema):
-    kind = fields.String(validate=validate.OneOf(
-        ['Work', 'Home', 'School', 'Other']), required=True)
+    type = fields.String(validate=validate.OneOf(
+        ['', 'Work', 'Home', 'School', 'Other']), required=True)
     value = fields.String(required=True)
 
 
