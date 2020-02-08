@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import axios from "axios";
 
 Vue.use(Vuex);
 
@@ -8,33 +9,15 @@ export default new Vuex.Store({
     search: "",
     contacts: {
       id: 1,
-      name: "My Contacts",
-      list: [
-        {
-          id: 1,
-          first_name: "Juan",
-          last_name: "Perez",
-          emails: [{ type: "Home", address: "juan@perez.com" }],
-          phones: [{ type: "Home", number: "8754433" }],
-          addresses: [{ type: "Home", number: "Main street 123" }]
-        },
-        {
-          id: 2,
-          first_name: "Jose",
-          last_name: "Lopez",
-          emails: [{ type: "Home", address: "jose@lopez.com" }],
-          phones: [{ type: "Home", number: "jose@lopez.com" }],
-          addresses: [{ type: "Home", number: "Main street 123" }]
-        }
-      ]
+      name: "",
+      list: []
     },
     activeContact: {
-      id: 1,
-      first_name: "Juan",
-      last_name: "Perez",
-      emails: [{ type: "Home", address: "juan@perez.com" }],
-      phones: [{ type: "Home", country: "+1", number: "8889900" }],
-      addresses: [{ kind: "Home", number: "Main street 123" }]
+      first_name: "",
+      last_name: "",
+      emails: [{ type: "", address: "" }],
+      phones: [{ type: "", country: "", number: "" }],
+      addresses: [{ type: "", value: "" }]
     }
   },
   getters: {
@@ -85,35 +68,59 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    getContacts(context) {
+      return axios
+        .get(process.env.VUE_APP_API_URL + "/contact")
+        .then(response => {
+          context.commit("setContacts", response.data);
+          return response.data;
+        });
+    },
     emtpyContacts(context) {
       context.commit("setContacts", {
-        id: null,
         name: "",
         list: []
       });
     },
     emptyActiveContact(context) {
       context.commit("setActiveContact", {
-        id: null,
         first_name: "",
         last_name: "",
         emails: [{ type: "", address: "" }],
         phones: [{ type: "", country: "", number: "" }],
-        addresses: [{ kind: "", number: "" }]
+        addresses: [{ type: "", value: "" }]
       });
     },
     makeActiveContact(context, contact) {
       context.commit("setActiveContact", contact);
     },
     createContact(context, contact) {
-      context.commit("insertIntoContacts", contact);
+      return axios
+        .post(process.env.VUE_APP_API_URL + "/contact", contact)
+        .then(response => {
+          context.commit("insertIntoContacts", response.data);
+          context.commit("setActiveContact", response.data);
+          return response.data;
+        });
     },
     removeContact(context, contact) {
-      context.commit("deleteFromContacts", contact);
+      return axios
+        .delete(process.env.VUE_APP_API_URL + "/contact/" + contact.id)
+        .then(response => {
+          context.commit("deleteFromContacts", response.data);
+          context.dispatch("emptyActiveContact");
+          return response.data;
+        });
     },
     updateContact(context, contact) {
-      context.commit("deleteFromContacts", contact);
-      context.commit("insertIntoContacts", contact);
+      return axios
+        .put(process.env.VUE_APP_API_URL + "/contact/" + contact.id, contact)
+        .then(response => {
+          context.commit("deleteFromContacts", contact);
+          context.commit("insertIntoContacts", contact);
+          context.dispatch("emptyActiveContact");
+          return response.data;
+        });
     }
   },
   modules: {}
