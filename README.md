@@ -1,6 +1,10 @@
-# frontend
+# Contacts application
 
-## Project setup
+This is a simple application that lets you manage your contacts, it has been written in Vuejs (Quasar) for the backend and Flask for the backend.
+
+You can make it work following these instructions.
+
+## Frontend setup
 
 ```bash
 npm install
@@ -18,20 +22,26 @@ npm run serve
 npm run build
 ```
 
-### Run your unit tests
+## Backend setup
 
 ```bash
-npm run test:unit
+pip install -r requirements.txt
 ```
 
-### Run your end-to-end tests
+### Run the server for development
 
 ```bash
-npm run test:e2e
+gunicorn -b 0.0.0.0:5000 app:app
 ```
 
-### Lints and fixes files
+## Build Docker container for deployment
 
 ```bash
-npm run lint
+docker build -t contacts .
+```
+
+### Run container locally
+
+```bash
+docker run --rm -p 8000:8000 --name contacts contacts:latest
 ```
