@@ -36,7 +36,7 @@
             lazy-rules
             :rules="[
               val =>
-                (val && val.length > 0) || 'Type the number without the code'
+                (val && val.length > 0 && /^(\d+-?)+\d+$/.test(val)) || 'Type the number without the code, only numbers and dashes'
             ]"
           />
         </div>
@@ -72,34 +72,8 @@ export default {
   data() {
     return {
       blockRemoval: true,
-      phoneTypes: [
-        {
-          label: "Home",
-          value: "Home"
-        },
-        {
-          label: "Work",
-          value: "Work"
-        },
-        {
-          label: "Mobile",
-          value: "Mobile"
-        },
-        {
-          label: "School",
-          value: "School"
-        }
-      ],
-      countryCodes: [
-        {
-          label: "+54",
-          value: "+54"
-        },
-        {
-          label: "+1",
-          value: "+1"
-        }
-      ]
+      phoneTypes: ["Mobile", "Home", "Work", "School", "Other"],
+      countryCodes: ["+1", "+54"]
     };
   },
   watch: {

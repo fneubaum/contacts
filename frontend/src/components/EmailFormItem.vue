@@ -20,11 +20,11 @@
             square
             filled
             v-model="email.address"
-            label="Address"
+            label="Email"
             lazy-rules
             :rules="[
               val =>
-                (val && val.length > 0) || 'Type the number without the code'
+                (val && val.length > 0 && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(val) ) || 'Must be a valid email address'
             ]"
           />
         </div>
@@ -60,20 +60,7 @@ export default {
   data() {
     return {
       blockRemoval: true,
-      emailTypes: [
-        {
-          label: "Home",
-          value: "Home"
-        },
-        {
-          label: "Work",
-          value: "Work"
-        },
-        {
-          label: "School",
-          value: "School"
-        }
-      ]
+      emailTypes: ["Home", "Work", "School", "Other"]
     };
   },
   watch: {
@@ -96,13 +83,18 @@ export default {
       } else {
         this.emails.pop();
         this.emails.push({
-          address: null,
-          type: null
+          address: "",
+          type: ""
         });
       }
     }
   },
-  mounted() {
+  created() {
+    if (this.emails.length == 0) {
+      this.addEmail();
+    }
+  },
+  beforeUpdate() {
     if (this.emails.length == 0) {
       this.addEmail();
     }

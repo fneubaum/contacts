@@ -11,15 +11,24 @@
           icon="menu"
         />
 
-        <q-toolbar-title>Contact List</q-toolbar-title>
+        <q-toolbar-title>Contacts</q-toolbar-title>
 
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer
+      v-model="leftDrawerOpen"
+      show-if-above
+      bordered
+      content-class="bg-grey-2"
+    >
+      <q-list>
         <q-input
-          dark
           dense
-          standout
+          standout="bg-grey-14 text-white"
           v-model="search"
           input-class="text-right"
-          class="q-ml-md"
+          class="q-ma-md"
         >
           <template v-slot:append>
             <q-icon v-if="search === ''" name="search" />
@@ -31,16 +40,6 @@
             />
           </template>
         </q-input>
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      content-class="bg-grey-2"
-    >
-      <q-list>
         <q-item-label header>Contacts</q-item-label>
         <q-item clickable v-ripple to="/contact" exact>
           <q-item-section avatar>
@@ -104,6 +103,9 @@ export default {
       this.$store.dispatch("makeActiveContact", contact);
       this.$router.push({ path: "/contact/" + contact.id });
     }
+  },
+  created: function() {
+    this.$store.dispatch('getContacts');
   },
   data() {
     return {

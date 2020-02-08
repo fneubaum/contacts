@@ -1,7 +1,6 @@
 <template>
-  <q-page>
-    <h3>{{ contacts.name }}</h3>
-    <q-list bordered separator>
+  <q-page class="q-pa-md">
+    <q-list bordered separator padding>
       <transition-group
         appear
         enter-active-class="animated fadeIn"
@@ -31,7 +30,7 @@
           </q-item-section>
 
           <q-item-section side>
-            <q-icon name="dots-vertical" color="grey" />
+            <q-icon name="more_vert" color="grey" />
           </q-item-section>
         </q-item>
       </transition-group>
@@ -67,6 +66,9 @@ export default {
       this.$store.dispatch("makeActiveContact", contact);
       this.$router.push({ path: "/contact/" + contact.id });
     }
-  }
+  },
+  created: function() {
+    this.$store.dispatch('getContacts');
+  },
 };
 </script>
